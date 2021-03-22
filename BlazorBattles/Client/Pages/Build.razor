@@ -30,19 +30,14 @@
     int selectedUnitId = 1;
     bool needMoreBananas = false;
 
-    public void BuildUnit()
+    public async Task BuildUnit()
     {
-        Unit selectedUnit = UnitService.Units.FirstOrDefault(unit => unit.Id == selectedUnitId);
-
-        if (BananaService.Bananas < selectedUnit.BananaCost)
-        {
-            needMoreBananas = true;
-            ToastService.ShowError("Not enough bananas!", ":(");
-            return;
-        }
-        needMoreBananas = false;
-        
-        BananaService.EatBananas(selectedUnit.BananaCost);
-        UnitService.AddUnit(selectedUnitId);
+        await UnitService.AddUnit(selectedUnitId);
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UnitService.LoadUnitsAsync();
+    }
+
 }
