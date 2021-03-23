@@ -4,14 +4,16 @@ using BlazorBattles.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BlazorBattles.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210323060641_Battles")]
+    partial class Battles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,8 +51,6 @@ namespace BlazorBattles.Server.Migrations
                     b.HasIndex("AttackerId");
 
                     b.HasIndex("OpponentId");
-
-                    b.HasIndex("WinnerId");
 
                     b.ToTable("Battles");
                 });
@@ -169,17 +169,9 @@ namespace BlazorBattles.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BlazorBattles.Shared.User", "Winner")
-                        .WithMany()
-                        .HasForeignKey("WinnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Attacker");
 
                     b.Navigation("Opponent");
-
-                    b.Navigation("Winner");
                 });
 
             modelBuilder.Entity("BlazorBattles.Shared.UserUnit", b =>

@@ -27,7 +27,7 @@ namespace BlazorBattles.Server.Controllers
                     Bananas = request.Bananas,
                     DateOfBirth = request.DateOfBirth,
                     IsConfirmed = request.IsConfirm
-                }, request.Password);
+                }, request.Password, int.Parse(request.StartUnitId));
 
             if (!response.Success)
             {

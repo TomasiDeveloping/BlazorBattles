@@ -131,7 +131,47 @@ namespace BlazorBattles.Server.Controllers
                 opponent.Bananas += attackerDamageSum;
             }
             
+            StoreBattleHistory(attacker, opponent, result);
+            
             await _context.SaveChangesAsync();
+        }
+
+        private void StoreBattleHistory(User attacker, User opponent, BattleResult result)
+        {
+            var battle = new Battle();
+            battle.Attacker = attacker;
+            battle.Opponent = opponent;
+            battle.RoundsFought = result.RoundsFought;
+            battle.WinnerDamage = result.IsVictory ? result.AttackerDamageSum : result.OpponentDamageSum;
+            battle.Winner = result.IsVictory ? attacker : opponent;
+
+            _context.Battles.Add(battle);
+        }
+
+        [HttpGet("History")]
+        public async Task<IActionResult> GetHistory()
+        {
+            var user = await _utilityService.GetUser();
+            var battles = await _context.Battles
+                .Where(b => b.AttackerId == user.Id || b.OpponentId == user.Id)
+                .Include(b => b.Attacker)
+                .Include(b => b.Opponent)
+                .Include(b => b.Winner)
+                .ToListAsync();
+
+            var history = battles.Select(battle => new BattleHistoryEntry()
+            {
+                BattleId = battle.Id,
+                AttackerId = battle.AttackerId,
+                OpponentId = battle.OpponentId,
+                YouWon = battle.WinnerId == user.Id,
+                AttackerName = battle.Attacker.Username,
+                OpponentName = battle.Opponent.Username,
+                RoundsFought = battle.RoundsFought,
+                WinnerDamageDealt = battle.WinnerDamage,
+                BattleDate = battle.BattleDate
+            });
+            return Ok(history.OrderByDescending(h => h.BattleDate));
         }
         
     }

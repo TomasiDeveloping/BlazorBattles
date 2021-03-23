@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BlazorBattles.Server.Data;
 using BlazorBattles.Server.Services;
@@ -60,6 +61,44 @@ namespace BlazorBattles.Server.Controllers
             );
 
             return Ok(response);
+        }
+
+        [HttpPost("revive")]
+        public async Task<IActionResult> ReviveArmy()
+        {
+            var user = await _utilityService.GetUser();
+            var userUnits = await _context.UserUnits
+                .Where(u => u.UserId == user.Id)
+                .Include(u => u.Unit)
+                .ToListAsync();
+
+            int bananaCost = 1000;
+            if (user.Bananas < bananaCost)
+            {
+                return BadRequest($"Not enough bananas! You need {bananaCost} bananas to revive your army.");
+            }
+
+            bool armyAlreadyAlive = true;
+            foreach (var userUnit in userUnits)
+            {
+                if (userUnit.HitPoints <= 0)
+                {
+                    armyAlreadyAlive = false;
+                    userUnit.HitPoints = new Random().Next(1, userUnit.Unit.HitPoints);
+                }
+            }
+
+            if (armyAlreadyAlive)
+            {
+                return Ok("Your army already alive");
+                
+            }
+
+            user.Bananas -= bananaCost;
+            await _context.SaveChangesAsync();
+
+            return Ok("Army revived!");
+
         }
     }
 }
