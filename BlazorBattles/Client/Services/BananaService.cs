@@ -14,7 +14,7 @@ namespace BlazorBattles.Client.Services
             _http = http;
         }
         public event Action OnChange;
-        public int Bananas { get; set; } = 0;
+        public int Bananas { get; set; }
         public void EatBananas(int amount)
         {
             Bananas -= amount;
@@ -23,7 +23,7 @@ namespace BlazorBattles.Client.Services
 
         public async Task AddBananas(int amount)
         {
-            var result = await _http.PutAsJsonAsync<int>("api/User/AddBananas", amount);
+            var result = await _http.PutAsJsonAsync("api/User/AddBananas", amount);
             Bananas = await result.Content.ReadFromJsonAsync<int>();
             BananasChanged();
         }
@@ -34,6 +34,9 @@ namespace BlazorBattles.Client.Services
             BananasChanged();
         }
 
-        void BananasChanged() => OnChange.Invoke();
+        void BananasChanged()
+        {
+            OnChange?.Invoke();
+        }
     }
 }

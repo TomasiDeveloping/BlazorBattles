@@ -56,7 +56,7 @@ namespace BlazorBattles.Server.Controllers
             var attackerDamageSum = 0;
             var opponentDamageSum = 0;
 
-            int currentRound = 0;
+            var currentRound = 0;
             while (attackerArmy.Count > 0 && opponentArmy.Count > 0)
             {
                 currentRound++;
@@ -75,10 +75,10 @@ namespace BlazorBattles.Server.Controllers
         }
 
         private int FightRound(User attacker, User opponent,
-            List<UserUnit> attackerArmy, List<UserUnit> opponentArmy, BattleResult result)
+            IReadOnlyList<UserUnit> attackerArmy, List<UserUnit> opponentArmy, BattleResult result)
         {
-            int randomAttackerIndex = new Random().Next(attackerArmy.Count);
-            int randomOpponentIndex = new Random().Next(opponentArmy.Count);
+            var randomAttackerIndex = new Random().Next(attackerArmy.Count);
+            var randomOpponentIndex = new Random().Next(opponentArmy.Count);
 
             var randomAttacker = attackerArmy[randomAttackerIndex];
             var randomOpponent = opponentArmy[randomOpponentIndex];
@@ -95,16 +95,14 @@ namespace BlazorBattles.Server.Controllers
                     $"{opponent.Username}'s {randomOpponent.Unit.Title} with {damage} damage.");
                 return damage;
             }
-            else
-            {
-                damage = randomOpponent.HitPoints;
-                randomOpponent.HitPoints = 0;
-                opponentArmy.Remove(randomOpponent);
-                result.Log.Add(
-                    $"{attacker.Username}'s {randomAttacker.Unit.Title} kills " +
-                    $"{opponent.Username}'s {randomOpponent.Unit.Title}!");
-                return damage;
-            }
+
+            damage = randomOpponent.HitPoints;
+            randomOpponent.HitPoints = 0;
+            opponentArmy.Remove(randomOpponent);
+            result.Log.Add(
+                $"{attacker.Username}'s {randomAttacker.Unit.Title} kills " +
+                $"{opponent.Username}'s {randomOpponent.Unit.Title}!");
+            return damage;
         }
 
         private async Task FinishFight(User attacker, User opponent, BattleResult result,
@@ -138,12 +136,14 @@ namespace BlazorBattles.Server.Controllers
 
         private void StoreBattleHistory(User attacker, User opponent, BattleResult result)
         {
-            var battle = new Battle();
-            battle.Attacker = attacker;
-            battle.Opponent = opponent;
-            battle.RoundsFought = result.RoundsFought;
-            battle.WinnerDamage = result.IsVictory ? result.AttackerDamageSum : result.OpponentDamageSum;
-            battle.Winner = result.IsVictory ? attacker : opponent;
+            var battle = new Battle
+            {
+                Attacker = attacker,
+                Opponent = opponent,
+                RoundsFought = result.RoundsFought,
+                WinnerDamage = result.IsVictory ? result.AttackerDamageSum : result.OpponentDamageSum,
+                Winner = result.IsVictory ? attacker : opponent
+            };
 
             _context.Battles.Add(battle);
         }

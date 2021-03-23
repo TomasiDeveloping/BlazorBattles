@@ -8,40 +8,40 @@
 
 <h3>Register</h3>
 
-<EditForm Model="user" OnValidSubmit="HandleRegistration">
+<EditForm Model="_user" OnValidSubmit="HandleRegistration">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <div class="form-group">
         <label for="email">Email</label>
-        <InputText id="email" @bind-Value="user.Email" class="form-control"></InputText>
-        <ValidationMessage For="() => user.Email"></ValidationMessage>
+        <InputText id="email" @bind-Value="_user.Email" class="form-control"></InputText>
+        <ValidationMessage For="() => _user.Email"></ValidationMessage>
     </div>
     <div class="form-group">
         <label for="username">Username</label>
-        <InputText id="username" @bind-Value="user.Username" class="form-control"></InputText>
-        <ValidationMessage For="() => user.Username"></ValidationMessage>
+        <InputText id="username" @bind-Value="_user.Username" class="form-control"></InputText>
+        <ValidationMessage For="() => _user.Username"></ValidationMessage>
     </div>
     <div class="form-group">
         <label for="password">Password</label>
-        <InputText type="password" id="password" @bind-Value="user.Password" class="form-control"></InputText>
-        <ValidationMessage For="() => user.Password"></ValidationMessage>
+        <InputText type="password" id="password" @bind-Value="_user.Password" class="form-control"></InputText>
+        <ValidationMessage For="() => _user.Password"></ValidationMessage>
     </div>
     <div class="form-group">
         <label for="confirmPassword">Confirm Password</label>
-        <InputText type="password" id="confirmPassword" @bind-Value="user.ConfirmPassword" class="form-control"></InputText>
-        <ValidationMessage For="() => user.ConfirmPassword"></ValidationMessage>
+        <InputText type="password" id="confirmPassword" @bind-Value="_user.ConfirmPassword" class="form-control"></InputText>
+        <ValidationMessage For="() => _user.ConfirmPassword"></ValidationMessage>
     </div>
     <div class="form-group">
         <label for="bio">Bio</label>
-        <InputTextArea id="bio" @bind-Value="user.Bio" class="form-control"></InputTextArea>
+        <InputTextArea id="bio" @bind-Value="_user.Bio" class="form-control"></InputTextArea>
     </div>
     <div class="form-group">
         <label for="bananas">Bananas</label>
-        <InputNumber id="bananas" @bind-Value="user.Bananas" class="form-control"></InputNumber>
-        <ValidationMessage For="() => user.Bananas"></ValidationMessage>
+        <InputNumber id="bananas" @bind-Value="_user.Bananas" class="form-control"></InputNumber>
+        <ValidationMessage For="() => _user.Bananas"></ValidationMessage>
     </div>
         <div class="form-group">
             <label for="startUnit">Start Unit</label>
-            <InputSelect id="startUnit" @bind-Value="user.StartUnitId" class="form-control">
+            <InputSelect id="startUnit" @bind-Value="_user.StartUnitId" class="form-control">
                 @foreach (var unit in UnitService.Units)
                 {
                     <option value="@unit.Id.ToString()">@unit.Title</option>
@@ -50,22 +50,22 @@
         </div>
     <div class="form-group">
         <label for="dateOfBirth">Date of Birth</label>
-        <InputDate id="dateOfBirth" @bind-Value="user.DateOfBirth" class="form-control"></InputDate>
+        <InputDate id="dateOfBirth" @bind-Value="_user.DateOfBirth" class="form-control"></InputDate>
     </div>
     <div class="form-check">
-        <InputCheckbox id="confirmed" @bind-Value="user.IsConfirm" class="form-check-input"></InputCheckbox>
+        <InputCheckbox id="confirmed" @bind-Value="_user.IsConfirm" class="form-check-input"></InputCheckbox>
         <label for="confirmed">Confirmed</label>
-        <ValidationMessage For="() => user.IsConfirm"></ValidationMessage>
+        <ValidationMessage For="() => _user.IsConfirm"></ValidationMessage>
     </div>
     <button class="btn btn-primary" type="submit">Register</button>
 </EditForm>
 
 @code {
-    UserRegister user = new UserRegister();
+    readonly UserRegister _user = new UserRegister();
 
     async void HandleRegistration()
     {
-        var result = await AuthService.Register(user);
+        var result = await AuthService.Register(_user);
         if (result.Success)
         {
             ToastService.ShowSuccess(result.Message);

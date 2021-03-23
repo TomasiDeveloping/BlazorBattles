@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -40,7 +39,7 @@ namespace BlazorBattles.Client
                     _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authhToken);
                     await _bananaService.GetBananas();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     await _localStorageService.RemoveItemAsync("authToken");
                     identity = new ClaimsIdentity();
@@ -66,7 +65,7 @@ namespace BlazorBattles.Client
             return Convert.FromBase64String(base64);
         }
 
-        public IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
+        private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
         {
             var payload = jwt.Split('.')[1];
             var jsonBytes = ParseBas64WithoutPadding(payload);

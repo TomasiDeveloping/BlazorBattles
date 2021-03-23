@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -97,37 +98,25 @@ namespace BlazorBattles.Server.Data
 
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
+            using var hmac = new System.Security.Cryptography.HMACSHA512();
+            passwordSalt = hmac.Key;
+            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
 
         private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
-            {
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                
-                for (int i = 0; i < computedHash.Length; i++)
-                {
-                    if (computedHash[i] != passwordHash[i])
-                    {
-                        return false;
-                    }
-                }
+            using var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt);
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
 
-                return true;
-            }
+            return !computedHash.Where((t, i) => t != passwordHash[i]).Any();
         }
 
         private string CreateToken(User user)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username)
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.Name, user.Username)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));

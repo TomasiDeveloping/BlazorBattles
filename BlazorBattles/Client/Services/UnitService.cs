@@ -28,7 +28,7 @@ namespace BlazorBattles.Client.Services
         public async Task AddUnit(int unitId)
         {
             Unit unit = Units.First(u => u.Id == unitId);
-            var result = await _http.PostAsJsonAsync<int>("api/UserUnit", unitId);
+            var result = await _http.PostAsJsonAsync("api/UserUnit", unitId);
             if (result.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 _toastService.ShowError(await result.Content.ReadAsStringAsync());

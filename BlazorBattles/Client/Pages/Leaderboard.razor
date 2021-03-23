@@ -36,7 +36,7 @@ else
                 <td>@entry.Defeats</td>
                 <td>@entry.Battles</td>
                 <td>
-                    @if (entry.UserId != myUserId)
+                    @if (entry.UserId != _myUserId)
                     {
                         <button class="btn btn-primary" @onclick="() => StartBattle(entry.UserId)">Fight</button>
                     }
@@ -48,28 +48,21 @@ else
 }
 
 @code {
-    int myUserId;
+    int _myUserId;
     
     protected override async Task OnInitializedAsync()
     {
         await LeaderboardService.GetLeaderboard();
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        myUserId = int.Parse(authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+        _myUserId = int.Parse(authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
     }
 
-    public string GetMyStyle(int userId)
+    private string GetMyStyle(int userId)
     {
-        if (userId == myUserId)
-        {
-            return "color: green; font-weight: 600;";
-        }
-        else
-        {
-            return string.Empty;
-        }
+        return userId == _myUserId ? "color: green; font-weight: 600;" : string.Empty;
     }
 
-    public async Task StartBattle(int opponentId)
+    private async Task StartBattle(int opponentId)
     {
         var result = await BattleService.StartBattle(opponentId);
         if (result.RoundsFought <= 0)

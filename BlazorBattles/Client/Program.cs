@@ -20,7 +20,7 @@ namespace BlazorBattles.Client
 
             builder.Services.AddBlazoredToast();
             builder.Services.AddBlazoredLocalStorage();
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddScoped<IBananaService, BananaService>();
             builder.Services.AddScoped<IUnitService, UnitService>();
             builder.Services.AddOptions();
